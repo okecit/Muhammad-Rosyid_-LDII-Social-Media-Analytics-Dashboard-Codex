@@ -3,47 +3,115 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Dashboard Sentimen Dakwah Digital</title>
+    <title>LDII Social Media Analytics Dashboard</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
       :root {
-        color-scheme: light;
-        --bg: #f7f7f2;
+        --bg: #f4f6f8;
         --panel: #ffffff;
-        --text: #18212b;
-        --muted: #5d6978;
-        --line: #d9ded7;
+        --ink: #17212b;
+        --muted: #627080;
+        --line: #d8dee6;
+        --accent: #1f6f68;
+        --accent-2: #384b70;
         --green: #2e7d32;
         --gray: #607d8b;
         --red: #c62828;
-        --accent: #245953;
+        --amber: #b26a00;
       }
 
       * {
         box-sizing: border-box;
       }
 
+      html {
+        scroll-behavior: smooth;
+      }
+
       body {
         margin: 0;
-        font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
         background: var(--bg);
-        color: var(--text);
+        color: var(--ink);
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       }
 
-      header,
+      .layout {
+        display: grid;
+        grid-template-columns: 260px minmax(0, 1fr);
+        min-height: 100vh;
+      }
+
+      aside {
+        position: sticky;
+        top: 0;
+        height: 100vh;
+        border-right: 1px solid var(--line);
+        background: #ffffff;
+        padding: 22px 18px;
+      }
+
+      .brand {
+        margin-bottom: 24px;
+      }
+
+      .brand strong {
+        display: block;
+        font-size: 1.2rem;
+      }
+
+      .brand span,
+      .small {
+        color: var(--muted);
+        font-size: 0.86rem;
+      }
+
+      nav {
+        display: grid;
+        gap: 8px;
+      }
+
+      nav a {
+        border-radius: 7px;
+        color: var(--ink);
+        padding: 10px 11px;
+        text-decoration: none;
+      }
+
+      nav a:hover {
+        background: #eef3f2;
+      }
+
       main {
-        width: min(1180px, calc(100% - 32px));
-        margin: 0 auto;
+        padding: 28px;
       }
 
-      header {
-        padding: 28px 0 16px;
+      .hero {
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: 18px;
+        margin-bottom: 18px;
+      }
+
+      h1,
+      h2,
+      h3 {
+        letter-spacing: 0;
       }
 
       h1 {
         margin: 0 0 8px;
-        font-size: clamp(1.6rem, 2.4vw, 2.4rem);
-        letter-spacing: 0;
+        font-size: clamp(1.7rem, 3vw, 2.8rem);
+      }
+
+      h2 {
+        margin: 0 0 14px;
+        font-size: 1.05rem;
+      }
+
+      h3 {
+        margin: 0 0 10px;
+        font-size: 0.96rem;
       }
 
       p {
@@ -51,65 +119,121 @@
         color: var(--muted);
       }
 
+      .toolbar {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        align-items: center;
+      }
+
+      button,
+      select,
+      input {
+        border: 1px solid var(--line);
+        border-radius: 7px;
+        background: #fff;
+        color: var(--ink);
+        padding: 9px 11px;
+        font: inherit;
+      }
+
+      button {
+        border-color: var(--accent);
+        background: var(--accent);
+        color: #fff;
+        cursor: pointer;
+        font-weight: 700;
+      }
+
+      button.secondary {
+        background: #fff;
+        color: var(--accent);
+      }
+
+      button:disabled {
+        cursor: wait;
+        opacity: 0.66;
+      }
+
       .metrics,
-      .grid {
+      .grid-2,
+      .grid-3,
+      .insights {
         display: grid;
         gap: 14px;
       }
 
       .metrics {
+        grid-template-columns: repeat(6, minmax(0, 1fr));
+      }
+
+      .grid-2 {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .grid-3 {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .insights {
         grid-template-columns: repeat(4, minmax(0, 1fr));
-        margin: 16px 0;
       }
 
-      .grid {
-        grid-template-columns: 0.9fr 1.1fr;
+      section {
+        margin-top: 14px;
       }
 
-      section,
-      .metric {
+      .panel,
+      .metric,
+      .insight {
         background: var(--panel);
         border: 1px solid var(--line);
         border-radius: 8px;
-        padding: 16px;
+        padding: 15px;
       }
 
-      .metric span {
+      .metric span,
+      .insight span {
         display: block;
         color: var(--muted);
-        font-size: 0.88rem;
+        font-size: 0.82rem;
       }
 
-      .metric strong {
+      .metric strong,
+      .insight strong {
         display: block;
-        margin-top: 6px;
+        margin-top: 5px;
         font-size: 1.35rem;
       }
 
-      h2 {
-        margin: 0 0 12px;
-        font-size: 1rem;
+      .insight em {
+        display: block;
+        margin-top: 6px;
+        color: var(--muted);
+        font-size: 0.8rem;
+        font-style: normal;
       }
 
-      button {
-        border: 0;
-        border-radius: 7px;
-        background: var(--accent);
-        color: white;
-        padding: 10px 14px;
-        font-weight: 700;
-        cursor: pointer;
+      .chart-box {
+        min-height: 300px;
       }
 
-      button:disabled {
-        cursor: wait;
-        opacity: 0.68;
+      .chart-box canvas {
+        max-height: 320px;
+      }
+
+      .table-wrap {
+        max-height: 470px;
+        overflow: auto;
+        border: 1px solid var(--line);
+        border-radius: 8px;
       }
 
       table {
         width: 100%;
         border-collapse: collapse;
-        font-size: 0.9rem;
+        background: #fff;
+        font-size: 0.88rem;
       }
 
       th,
@@ -121,23 +245,21 @@
       }
 
       th {
+        position: sticky;
+        top: 0;
+        background: #f9fafb;
         color: var(--muted);
-        font-weight: 700;
-      }
-
-      .table-wrap {
-        max-height: 470px;
-        overflow: auto;
+        z-index: 1;
       }
 
       .badge {
-        border-radius: 999px;
-        color: white;
         display: inline-block;
-        min-width: 66px;
+        min-width: 70px;
+        border-radius: 999px;
+        color: #fff;
         padding: 3px 8px;
         text-align: center;
-        font-size: 0.78rem;
+        font-size: 0.76rem;
         font-weight: 700;
       }
 
@@ -153,10 +275,36 @@
         background: var(--red);
       }
 
-      .summary {
-        margin: 14px 0 32px;
+      .word-list {
+        display: grid;
+        gap: 8px;
+      }
+
+      .word-row {
+        display: grid;
+        grid-template-columns: 130px minmax(0, 1fr) 42px;
+        gap: 10px;
+        align-items: center;
+        font-size: 0.88rem;
+      }
+
+      .bar {
+        height: 9px;
+        border-radius: 999px;
+        background: #dfe6e3;
+        overflow: hidden;
+      }
+
+      .bar i {
+        display: block;
+        height: 100%;
+        background: var(--accent);
+      }
+
+      .summary-output {
+        margin-top: 12px;
         white-space: pre-wrap;
-        line-height: 1.55;
+        line-height: 1.58;
       }
 
       .status {
@@ -164,87 +312,218 @@
         color: var(--muted);
       }
 
-      @media (max-width: 860px) {
-        .metrics,
-        .grid {
+      @media (max-width: 1120px) {
+        .layout {
           grid-template-columns: 1fr;
+        }
+
+        aside {
+          position: static;
+          height: auto;
+        }
+
+        nav {
+          grid-template-columns: repeat(3, minmax(0, 1fr));
+        }
+
+        .metrics,
+        .insights,
+        .grid-3 {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+      }
+
+      @media (max-width: 760px) {
+        main {
+          padding: 18px;
+        }
+
+        .hero,
+        .grid-2,
+        .grid-3,
+        .metrics,
+        .insights {
+          grid-template-columns: 1fr;
+          display: grid;
+        }
+
+        nav {
+          grid-template-columns: 1fr 1fr;
         }
       }
     </style>
   </head>
   <body>
-    <header>
-      <h1>Analisis Sentimen Komentar YouTube Dakwah Digital di Indonesia</h1>
-      <p>Versi Vercel: dashboard statis dengan API Python serverless dan ringkasan OpenAI.</p>
-    </header>
+    <div class="layout">
+      <aside>
+        <div class="brand">
+          <strong>LDII Analytics</strong>
+          <span>Social media sentiment dashboard</span>
+        </div>
+        <nav>
+          <a href="#overview">Overview</a>
+          <a href="#sentiment">Sentimen</a>
+          <a href="#content">Per Konten</a>
+          <a href="#engagement">Engagement</a>
+          <a href="#words">Kata Populer</a>
+          <a href="#summary">AI Summary</a>
+          <a href="#table">Data Table</a>
+        </nav>
+        <p class="small" style="margin-top: 22px">Dataset: YouTube dan Facebook. Analisis sentimen memakai kamus ringan agar kompatibel dengan Vercel.</p>
+      </aside>
 
-    <main>
-      <div class="metrics">
-        <div class="metric"><span>Total komentar</span><strong id="total-comments">-</strong></div>
-        <div class="metric"><span>Video unik</span><strong id="unique-videos">-</strong></div>
-        <div class="metric"><span>Total vote</span><strong id="total-votes">-</strong></div>
-        <div class="metric"><span>Metode</span><strong id="method">-</strong></div>
-      </div>
+      <main>
+        <div class="hero" id="overview">
+          <div>
+            <h1>LDII Social Media Analytics</h1>
+            <p>Analisis percakapan publik terkait LDII, dakwah digital, sentimen audiens, dan pola engagement lintas platform.</p>
+          </div>
+          <div class="toolbar">
+            <select id="platform-filter">
+              <option value="all">Semua Platform</option>
+              <option value="YouTube">YouTube</option>
+              <option value="Facebook">Facebook</option>
+            </select>
+            <select id="sentiment-filter">
+              <option value="all">Semua Sentimen</option>
+              <option value="positif">Positif</option>
+              <option value="netral">Netral</option>
+              <option value="negatif">Negatif</option>
+            </select>
+          </div>
+        </div>
 
-      <div class="grid">
-        <section>
-          <h2>Distribusi Sentimen</h2>
-          <canvas id="sentiment-chart" height="260"></canvas>
+        <section class="metrics">
+          <div class="metric"><span>Total komentar</span><strong id="m-comments">-</strong></div>
+          <div class="metric"><span>Penulis unik</span><strong id="m-authors">-</strong></div>
+          <div class="metric"><span>Konten unik</span><strong id="m-contents">-</strong></div>
+          <div class="metric"><span>Engagement</span><strong id="m-engagement">-</strong></div>
+          <div class="metric"><span>Positif</span><strong id="m-positive">-</strong></div>
+          <div class="metric"><span>Negatif</span><strong id="m-negative">-</strong></div>
         </section>
-        <section>
-          <h2>Ringkasan per Video</h2>
+
+        <section class="insights" id="insight-cards"></section>
+
+        <section class="grid-3" id="sentiment">
+          <div class="panel chart-box">
+            <h2>Distribusi Sentimen</h2>
+            <canvas id="sentiment-chart"></canvas>
+          </div>
+          <div class="panel chart-box">
+            <h2>Distribusi Platform</h2>
+            <canvas id="platform-chart"></canvas>
+          </div>
+          <div class="panel chart-box">
+            <h2>Sentimen per Platform</h2>
+            <canvas id="platform-sentiment-chart"></canvas>
+          </div>
+        </section>
+
+        <section class="grid-2" id="content">
+          <div class="panel chart-box">
+            <h2>Komentar per Konten</h2>
+            <canvas id="content-chart"></canvas>
+          </div>
+          <div class="panel">
+            <h2>Konten dengan Risiko Negatif Tertinggi</h2>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Konten</th>
+                    <th>Platform</th>
+                    <th>Total</th>
+                    <th>Negatif</th>
+                    <th>Rate</th>
+                  </tr>
+                </thead>
+                <tbody id="negative-content"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <section class="grid-2" id="engagement">
+          <div class="panel">
+            <h2>Top Komentar Berdasarkan Engagement</h2>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Platform</th>
+                    <th>Penulis</th>
+                    <th>Komentar</th>
+                    <th>Sentimen</th>
+                    <th>Eng.</th>
+                  </tr>
+                </thead>
+                <tbody id="top-comments"></tbody>
+              </table>
+            </div>
+          </div>
+          <div class="panel chart-box">
+            <h2>Distribusi Panjang Komentar</h2>
+            <canvas id="length-chart"></canvas>
+          </div>
+        </section>
+
+        <section class="grid-2" id="words">
+          <div class="panel">
+            <h2>Kata Paling Sering Muncul</h2>
+            <div class="toolbar" style="margin-bottom: 12px">
+              <button class="secondary word-filter" data-key="all">Semua</button>
+              <button class="secondary word-filter" data-key="youtube">YouTube</button>
+              <button class="secondary word-filter" data-key="facebook">Facebook</button>
+              <button class="secondary word-filter" data-key="positive">Positif</button>
+              <button class="secondary word-filter" data-key="negative">Negatif</button>
+            </div>
+            <div class="word-list" id="word-list"></div>
+          </div>
+          <div class="panel" id="summary">
+            <h2>Ringkasan AI OpenAI</h2>
+            <p>Ringkasan menggunakan data agregat, contoh komentar engagement tinggi, kata populer, dan sentimen per platform.</p>
+            <button id="summary-btn" style="margin-top: 12px">Generate AI Summary</button>
+            <div class="status" id="summary-status">Butuh OPENAI_API_KEY di Vercel Environment Variables.</div>
+            <div class="summary-output" id="summary-output"></div>
+          </div>
+        </section>
+
+        <section class="panel" id="table">
+          <div class="hero" style="margin-bottom: 12px">
+            <h2>Data Komentar</h2>
+            <input id="search" placeholder="Cari komentar, penulis, atau konten" />
+          </div>
           <div class="table-wrap">
             <table>
               <thead>
                 <tr>
-                  <th>Judul</th>
-                  <th>Total</th>
-                  <th>Positif</th>
-                  <th>Netral</th>
-                  <th>Negatif</th>
+                  <th>#</th>
+                  <th>Platform</th>
+                  <th>Penulis</th>
+                  <th>Komentar</th>
+                  <th>Sentimen</th>
+                  <th>Eng.</th>
+                  <th>Konten</th>
                 </tr>
               </thead>
-              <tbody id="video-summary"></tbody>
+              <tbody id="comments"></tbody>
             </table>
           </div>
         </section>
-      </div>
-
-      <section style="margin-top: 14px">
-        <h2>Tabel Komentar dan Sentimen</h2>
-        <div class="table-wrap">
-          <table>
-            <thead>
-              <tr>
-                <th>Author</th>
-                <th>Komentar</th>
-                <th>Sentimen</th>
-                <th>Vote</th>
-                <th>Reply</th>
-              </tr>
-            </thead>
-            <tbody id="comments"></tbody>
-          </table>
-        </div>
-      </section>
-
-      <section class="summary">
-        <h2>Ringkasan AI</h2>
-        <button id="summary-btn">Generate AI Summary</button>
-        <div class="status" id="summary-status">Butuh OPENAI_API_KEY di Vercel Environment Variables.</div>
-        <div id="summary-output" style="margin-top: 14px"></div>
-      </section>
-    </main>
+      </main>
+    </div>
 
     <script>
-      let chart;
+      const charts = {};
+      let payload;
+      let filteredComments = [];
+      const sentimentLabels = ["positif", "netral", "negatif"];
+      const sentimentColors = ["#2e7d32", "#607d8b", "#c62828"];
 
-      function formatNumber(value) {
-        return new Intl.NumberFormat("id-ID").format(value || 0);
-      }
+      const fmt = new Intl.NumberFormat("id-ID");
 
       function escapeHtml(value) {
-        return String(value)
+        return String(value ?? "")
           .replaceAll("&", "&amp;")
           .replaceAll("<", "&lt;")
           .replaceAll(">", "&gt;")
@@ -252,71 +531,232 @@
           .replaceAll("'", "&#039;");
       }
 
-      function renderChart(counts) {
-        const ctx = document.getElementById("sentiment-chart");
-        const labels = ["positif", "netral", "negatif"];
-        const values = labels.map((label) => counts[label] || 0);
-        if (chart) chart.destroy();
-        chart = new Chart(ctx, {
+      function setText(id, value) {
+        document.getElementById(id).textContent = value;
+      }
+
+      function destroyChart(id) {
+        if (charts[id]) charts[id].destroy();
+      }
+
+      function makeChart(id, config) {
+        destroyChart(id);
+        charts[id] = new Chart(document.getElementById(id), config);
+      }
+
+      function countBy(rows, key) {
+        return rows.reduce((acc, row) => {
+          const value = row[key] || "Tidak diketahui";
+          acc[value] = (acc[value] || 0) + 1;
+          return acc;
+        }, {});
+      }
+
+      function sentimentCounts(rows) {
+        const counts = { positif: 0, netral: 0, negatif: 0 };
+        rows.forEach((row) => {
+          counts[row.sentiment] = (counts[row.sentiment] || 0) + 1;
+        });
+        return counts;
+      }
+
+      function applyFilters() {
+        const platform = document.getElementById("platform-filter").value;
+        const sentiment = document.getElementById("sentiment-filter").value;
+        const query = document.getElementById("search").value.trim().toLowerCase();
+
+        filteredComments = payload.comments.filter((row) => {
+          const platformOk = platform === "all" || row.platform === platform;
+          const sentimentOk = sentiment === "all" || row.sentiment === sentiment;
+          const queryOk =
+            !query ||
+            row.comment.toLowerCase().includes(query) ||
+            row.author.toLowerCase().includes(query) ||
+            row.title.toLowerCase().includes(query);
+          return platformOk && sentimentOk && queryOk;
+        });
+
+        renderFilteredVisuals();
+        renderCommentTable();
+      }
+
+      function renderMetrics() {
+        setText("m-comments", fmt.format(payload.metrics.total_comments));
+        setText("m-authors", fmt.format(payload.metrics.unique_authors));
+        setText("m-contents", fmt.format(payload.metrics.unique_contents));
+        setText("m-engagement", fmt.format(payload.metrics.total_engagement));
+        setText("m-positive", `${payload.metrics.positive_rate}%`);
+        setText("m-negative", `${payload.metrics.negative_rate}%`);
+
+        document.getElementById("insight-cards").innerHTML = payload.insights
+          .map(
+            (item) => `
+              <div class="insight">
+                <span>${escapeHtml(item.label)}</span>
+                <strong>${escapeHtml(item.value)}</strong>
+                <em>${escapeHtml(item.note)}</em>
+              </div>`
+          )
+          .join("");
+      }
+
+      function renderFilteredVisuals() {
+        const counts = sentimentCounts(filteredComments);
+        makeChart("sentiment-chart", {
           type: "doughnut",
           data: {
-            labels,
-            datasets: [
-              {
-                data: values,
-                backgroundColor: ["#2e7d32", "#607d8b", "#c62828"],
-                borderWidth: 0,
-              },
-            ],
+            labels: sentimentLabels,
+            datasets: [{ data: sentimentLabels.map((label) => counts[label] || 0), backgroundColor: sentimentColors, borderWidth: 0 }],
           },
-          options: {
-            responsive: true,
-            plugins: {
-              legend: { position: "bottom" },
-            },
+          options: { responsive: true, plugins: { legend: { position: "bottom" } } },
+        });
+
+        const platform = countBy(filteredComments, "platform");
+        makeChart("platform-chart", {
+          type: "bar",
+          data: {
+            labels: Object.keys(platform),
+            datasets: [{ label: "Komentar", data: Object.values(platform), backgroundColor: ["#384b70", "#1f6f68"] }],
           },
+          options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } },
+        });
+
+        renderPlatformSentiment();
+        renderContentChart();
+        renderLengthChart();
+      }
+
+      function renderPlatformSentiment() {
+        const platforms = [...new Set(filteredComments.map((row) => row.platform))];
+        const data = {};
+        platforms.forEach((platform) => {
+          data[platform] = { positif: 0, netral: 0, negatif: 0 };
+        });
+        filteredComments.forEach((row) => {
+          data[row.platform][row.sentiment] += 1;
+        });
+        makeChart("platform-sentiment-chart", {
+          type: "bar",
+          data: {
+            labels: platforms,
+            datasets: sentimentLabels.map((label, index) => ({
+              label,
+              data: platforms.map((platform) => data[platform][label] || 0),
+              backgroundColor: sentimentColors[index],
+            })),
+          },
+          options: { responsive: true, scales: { x: { stacked: true }, y: { stacked: true, beginAtZero: true } } },
         });
       }
 
-      function renderTables(payload) {
-        document.getElementById("video-summary").innerHTML = payload.video_summary
+      function renderContentChart() {
+        const content = {};
+        filteredComments.forEach((row) => {
+          if (!content[row.title]) content[row.title] = { total: 0, engagement: 0 };
+          content[row.title].total += 1;
+          content[row.title].engagement += row.engagement;
+        });
+        const rows = Object.entries(content)
+          .map(([title, value]) => ({ title, ...value }))
+          .sort((a, b) => b.total - a.total)
+          .slice(0, 10)
+          .reverse();
+        makeChart("content-chart", {
+          type: "bar",
+          data: {
+            labels: rows.map((row) => row.title.slice(0, 42)),
+            datasets: [{ label: "Komentar", data: rows.map((row) => row.total), backgroundColor: "#1f6f68" }],
+          },
+          options: { indexAxis: "y", responsive: true, plugins: { legend: { display: false } }, scales: { x: { beginAtZero: true } } },
+        });
+      }
+
+      function renderLengthChart() {
+        const bins = ["1-5 kata", "6-15 kata", "16-35 kata", ">35 kata"];
+        const platforms = [...new Set(filteredComments.map((row) => row.platform))];
+        const data = {};
+        platforms.forEach((platform) => {
+          data[platform] = Object.fromEntries(bins.map((bin) => [bin, 0]));
+        });
+        filteredComments.forEach((row) => {
+          const bin = row.word_count <= 5 ? "1-5 kata" : row.word_count <= 15 ? "6-15 kata" : row.word_count <= 35 ? "16-35 kata" : ">35 kata";
+          data[row.platform][bin] += 1;
+        });
+        makeChart("length-chart", {
+          type: "bar",
+          data: {
+            labels: bins,
+            datasets: platforms.map((platform, index) => ({
+              label: platform,
+              data: bins.map((bin) => data[platform][bin]),
+              backgroundColor: index === 0 ? "#384b70" : "#1f6f68",
+            })),
+          },
+          options: { responsive: true, scales: { y: { beginAtZero: true } } },
+        });
+      }
+
+      function renderStaticTables() {
+        document.getElementById("negative-content").innerHTML = payload.top_negative_content
           .map(
             (row) => `
               <tr>
                 <td>${escapeHtml(row.title)}</td>
-                <td>${formatNumber(row.total_komentar)}</td>
-                <td>${formatNumber(row.positif)}</td>
-                <td>${formatNumber(row.netral)}</td>
-                <td>${formatNumber(row.negatif)}</td>
+                <td>${escapeHtml(row.platform)}</td>
+                <td>${fmt.format(row.total)}</td>
+                <td>${fmt.format(row.negatif)}</td>
+                <td>${row.negative_rate}%</td>
               </tr>`
           )
           .join("");
 
-        document.getElementById("comments").innerHTML = payload.comments
-          .slice(0, 500)
+        document.getElementById("top-comments").innerHTML = payload.top_comments
+          .slice(0, 12)
           .map(
             (row) => `
               <tr>
+                <td>${escapeHtml(row.platform)}</td>
                 <td>${escapeHtml(row.author)}</td>
                 <td>${escapeHtml(row.comment)}</td>
                 <td><span class="badge ${row.sentiment}">${row.sentiment}</span></td>
-                <td>${formatNumber(row.voteCount)}</td>
-                <td>${formatNumber(row.replyCount)}</td>
+                <td>${fmt.format(row.engagement)}</td>
               </tr>`
           )
           .join("");
       }
 
-      async function loadDashboard() {
-        const response = await fetch("/api/analyze");
-        if (!response.ok) throw new Error("Gagal memuat data analisis.");
-        const payload = await response.json();
-        document.getElementById("total-comments").textContent = formatNumber(payload.metrics.total_comments);
-        document.getElementById("unique-videos").textContent = formatNumber(payload.metrics.unique_videos);
-        document.getElementById("total-votes").textContent = formatNumber(payload.metrics.total_votes);
-        document.getElementById("method").textContent = payload.metrics.method;
-        renderChart(payload.sentiment_counts);
-        renderTables(payload);
+      function renderWords(key = "all") {
+        const rows = payload.word_frequency[key] || [];
+        const max = Math.max(...rows.map((row) => row.count), 1);
+        document.getElementById("word-list").innerHTML = rows
+          .slice(0, 20)
+          .map(
+            (row) => `
+              <div class="word-row">
+                <strong>${escapeHtml(row.word)}</strong>
+                <span class="bar"><i style="width:${Math.max(6, (row.count / max) * 100)}%"></i></span>
+                <span>${fmt.format(row.count)}</span>
+              </div>`
+          )
+          .join("");
+      }
+
+      function renderCommentTable() {
+        document.getElementById("comments").innerHTML = filteredComments
+          .slice(0, 300)
+          .map(
+            (row, index) => `
+              <tr>
+                <td>${index + 1}</td>
+                <td>${escapeHtml(row.platform)}</td>
+                <td>${escapeHtml(row.author)}</td>
+                <td>${escapeHtml(row.comment)}</td>
+                <td><span class="badge ${row.sentiment}">${row.sentiment}</span></td>
+                <td>${fmt.format(row.engagement)}</td>
+                <td>${escapeHtml(row.title)}</td>
+              </tr>`
+          )
+          .join("");
       }
 
       async function generateSummary() {
@@ -324,13 +764,13 @@
         const status = document.getElementById("summary-status");
         const output = document.getElementById("summary-output");
         button.disabled = true;
-        status.textContent = "OpenAI sedang menyusun ringkasan...";
+        status.textContent = "OpenAI sedang menyusun ringkasan analitik...";
         output.textContent = "";
         try {
           const response = await fetch("/api/summary", { method: "POST" });
-          const payload = await response.json();
-          if (!response.ok) throw new Error(payload.error || "Gagal membuat ringkasan.");
-          output.textContent = payload.summary;
+          const data = await response.json();
+          if (!response.ok) throw new Error(data.error || "Gagal membuat ringkasan.");
+          output.textContent = data.summary;
           status.textContent = "Ringkasan selesai.";
         } catch (error) {
           status.textContent = error.message;
@@ -339,9 +779,27 @@
         }
       }
 
+      async function init() {
+        const response = await fetch("/api/analyze");
+        if (!response.ok) throw new Error("Gagal memuat API analisis.");
+        payload = await response.json();
+        filteredComments = payload.comments;
+        renderMetrics();
+        renderStaticTables();
+        renderWords("all");
+        applyFilters();
+      }
+
+      document.getElementById("platform-filter").addEventListener("change", applyFilters);
+      document.getElementById("sentiment-filter").addEventListener("change", applyFilters);
+      document.getElementById("search").addEventListener("input", applyFilters);
       document.getElementById("summary-btn").addEventListener("click", generateSummary);
-      loadDashboard().catch((error) => {
-        document.body.insertAdjacentHTML("afterbegin", `<p style="padding:16px;color:#c62828">${escapeHtml(error.message)}</p>`);
+      document.querySelectorAll(".word-filter").forEach((button) => {
+        button.addEventListener("click", () => renderWords(button.dataset.key));
+      });
+
+      init().catch((error) => {
+        document.body.insertAdjacentHTML("afterbegin", `<div style="padding:16px;color:#c62828">${escapeHtml(error.message)}</div>`);
       });
     </script>
   </body>
