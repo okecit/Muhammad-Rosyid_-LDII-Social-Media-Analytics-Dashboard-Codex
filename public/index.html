@@ -1,0 +1,348 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Dashboard Sentimen Dakwah Digital</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+      :root {
+        color-scheme: light;
+        --bg: #f7f7f2;
+        --panel: #ffffff;
+        --text: #18212b;
+        --muted: #5d6978;
+        --line: #d9ded7;
+        --green: #2e7d32;
+        --gray: #607d8b;
+        --red: #c62828;
+        --accent: #245953;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        background: var(--bg);
+        color: var(--text);
+      }
+
+      header,
+      main {
+        width: min(1180px, calc(100% - 32px));
+        margin: 0 auto;
+      }
+
+      header {
+        padding: 28px 0 16px;
+      }
+
+      h1 {
+        margin: 0 0 8px;
+        font-size: clamp(1.6rem, 2.4vw, 2.4rem);
+        letter-spacing: 0;
+      }
+
+      p {
+        margin: 0;
+        color: var(--muted);
+      }
+
+      .metrics,
+      .grid {
+        display: grid;
+        gap: 14px;
+      }
+
+      .metrics {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        margin: 16px 0;
+      }
+
+      .grid {
+        grid-template-columns: 0.9fr 1.1fr;
+      }
+
+      section,
+      .metric {
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 16px;
+      }
+
+      .metric span {
+        display: block;
+        color: var(--muted);
+        font-size: 0.88rem;
+      }
+
+      .metric strong {
+        display: block;
+        margin-top: 6px;
+        font-size: 1.35rem;
+      }
+
+      h2 {
+        margin: 0 0 12px;
+        font-size: 1rem;
+      }
+
+      button {
+        border: 0;
+        border-radius: 7px;
+        background: var(--accent);
+        color: white;
+        padding: 10px 14px;
+        font-weight: 700;
+        cursor: pointer;
+      }
+
+      button:disabled {
+        cursor: wait;
+        opacity: 0.68;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.9rem;
+      }
+
+      th,
+      td {
+        border-bottom: 1px solid var(--line);
+        padding: 9px 8px;
+        text-align: left;
+        vertical-align: top;
+      }
+
+      th {
+        color: var(--muted);
+        font-weight: 700;
+      }
+
+      .table-wrap {
+        max-height: 470px;
+        overflow: auto;
+      }
+
+      .badge {
+        border-radius: 999px;
+        color: white;
+        display: inline-block;
+        min-width: 66px;
+        padding: 3px 8px;
+        text-align: center;
+        font-size: 0.78rem;
+        font-weight: 700;
+      }
+
+      .positif {
+        background: var(--green);
+      }
+
+      .netral {
+        background: var(--gray);
+      }
+
+      .negatif {
+        background: var(--red);
+      }
+
+      .summary {
+        margin: 14px 0 32px;
+        white-space: pre-wrap;
+        line-height: 1.55;
+      }
+
+      .status {
+        margin-top: 10px;
+        color: var(--muted);
+      }
+
+      @media (max-width: 860px) {
+        .metrics,
+        .grid {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>Analisis Sentimen Komentar YouTube Dakwah Digital di Indonesia</h1>
+      <p>Versi Vercel: dashboard statis dengan API Python serverless dan ringkasan OpenAI.</p>
+    </header>
+
+    <main>
+      <div class="metrics">
+        <div class="metric"><span>Total komentar</span><strong id="total-comments">-</strong></div>
+        <div class="metric"><span>Video unik</span><strong id="unique-videos">-</strong></div>
+        <div class="metric"><span>Total vote</span><strong id="total-votes">-</strong></div>
+        <div class="metric"><span>Metode</span><strong id="method">-</strong></div>
+      </div>
+
+      <div class="grid">
+        <section>
+          <h2>Distribusi Sentimen</h2>
+          <canvas id="sentiment-chart" height="260"></canvas>
+        </section>
+        <section>
+          <h2>Ringkasan per Video</h2>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Judul</th>
+                  <th>Total</th>
+                  <th>Positif</th>
+                  <th>Netral</th>
+                  <th>Negatif</th>
+                </tr>
+              </thead>
+              <tbody id="video-summary"></tbody>
+            </table>
+          </div>
+        </section>
+      </div>
+
+      <section style="margin-top: 14px">
+        <h2>Tabel Komentar dan Sentimen</h2>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Author</th>
+                <th>Komentar</th>
+                <th>Sentimen</th>
+                <th>Vote</th>
+                <th>Reply</th>
+              </tr>
+            </thead>
+            <tbody id="comments"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="summary">
+        <h2>Ringkasan AI</h2>
+        <button id="summary-btn">Generate AI Summary</button>
+        <div class="status" id="summary-status">Butuh OPENAI_API_KEY di Vercel Environment Variables.</div>
+        <div id="summary-output" style="margin-top: 14px"></div>
+      </section>
+    </main>
+
+    <script>
+      let chart;
+
+      function formatNumber(value) {
+        return new Intl.NumberFormat("id-ID").format(value || 0);
+      }
+
+      function escapeHtml(value) {
+        return String(value)
+          .replaceAll("&", "&amp;")
+          .replaceAll("<", "&lt;")
+          .replaceAll(">", "&gt;")
+          .replaceAll('"', "&quot;")
+          .replaceAll("'", "&#039;");
+      }
+
+      function renderChart(counts) {
+        const ctx = document.getElementById("sentiment-chart");
+        const labels = ["positif", "netral", "negatif"];
+        const values = labels.map((label) => counts[label] || 0);
+        if (chart) chart.destroy();
+        chart = new Chart(ctx, {
+          type: "doughnut",
+          data: {
+            labels,
+            datasets: [
+              {
+                data: values,
+                backgroundColor: ["#2e7d32", "#607d8b", "#c62828"],
+                borderWidth: 0,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            plugins: {
+              legend: { position: "bottom" },
+            },
+          },
+        });
+      }
+
+      function renderTables(payload) {
+        document.getElementById("video-summary").innerHTML = payload.video_summary
+          .map(
+            (row) => `
+              <tr>
+                <td>${escapeHtml(row.title)}</td>
+                <td>${formatNumber(row.total_komentar)}</td>
+                <td>${formatNumber(row.positif)}</td>
+                <td>${formatNumber(row.netral)}</td>
+                <td>${formatNumber(row.negatif)}</td>
+              </tr>`
+          )
+          .join("");
+
+        document.getElementById("comments").innerHTML = payload.comments
+          .slice(0, 500)
+          .map(
+            (row) => `
+              <tr>
+                <td>${escapeHtml(row.author)}</td>
+                <td>${escapeHtml(row.comment)}</td>
+                <td><span class="badge ${row.sentiment}">${row.sentiment}</span></td>
+                <td>${formatNumber(row.voteCount)}</td>
+                <td>${formatNumber(row.replyCount)}</td>
+              </tr>`
+          )
+          .join("");
+      }
+
+      async function loadDashboard() {
+        const response = await fetch("/api/analyze");
+        if (!response.ok) throw new Error("Gagal memuat data analisis.");
+        const payload = await response.json();
+        document.getElementById("total-comments").textContent = formatNumber(payload.metrics.total_comments);
+        document.getElementById("unique-videos").textContent = formatNumber(payload.metrics.unique_videos);
+        document.getElementById("total-votes").textContent = formatNumber(payload.metrics.total_votes);
+        document.getElementById("method").textContent = payload.metrics.method;
+        renderChart(payload.sentiment_counts);
+        renderTables(payload);
+      }
+
+      async function generateSummary() {
+        const button = document.getElementById("summary-btn");
+        const status = document.getElementById("summary-status");
+        const output = document.getElementById("summary-output");
+        button.disabled = true;
+        status.textContent = "OpenAI sedang menyusun ringkasan...";
+        output.textContent = "";
+        try {
+          const response = await fetch("/api/summary", { method: "POST" });
+          const payload = await response.json();
+          if (!response.ok) throw new Error(payload.error || "Gagal membuat ringkasan.");
+          output.textContent = payload.summary;
+          status.textContent = "Ringkasan selesai.";
+        } catch (error) {
+          status.textContent = error.message;
+        } finally {
+          button.disabled = false;
+        }
+      }
+
+      document.getElementById("summary-btn").addEventListener("click", generateSummary);
+      loadDashboard().catch((error) => {
+        document.body.insertAdjacentHTML("afterbegin", `<p style="padding:16px;color:#c62828">${escapeHtml(error.message)}</p>`);
+      });
+    </script>
+  </body>
+</html>
